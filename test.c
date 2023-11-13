@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define DR42_TRACE
 #include "trace.h"
-
-char* prg_name = NULL;
-char buff[1024];
 
 int foo(int val) {
     int c = 1 + 2;

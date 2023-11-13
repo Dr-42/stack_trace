@@ -1,4 +1,65 @@
-#include "trace.h"
+#pragma once
+
+/* --------------------------------------------------------------------------
+Copyright 2023 Dr. Spandan Roy
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice, this
+      list of conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGE.
+
+   --------------------------------------------------------------------------
+  * Trace
+  * Simple stack trace for C programs
+  * --------------------------------------------------------------------------
+  *  Prerequisites:
+  *  1. Make sure you have addr2line installed on linux
+  *  --------------------------------------------------------------------------
+  *  Usage:
+  *  0. #define DR42_TRACE before including this file
+  *     STB style include
+  *     #define DR42_TRACE
+  *     #include "trace.h"
+  *
+  *  1. Call init_trace(argv[0]) in main // Will work without this on windows
+  *  2. Call print_trace() to print the stack trace
+  *  3. Call fprint_trace(fp) to print the stack trace to a file
+  *  4. Call sprint_trace(buffer) to print the stack trace to a buffer
+  * --------------------------------------------------------------------------
+  *  Compilation stuff:
+  *  1. Compile with -g
+  *  2. Link with -ldl -rdynamic on linux
+  *  3. Compile with -g -gcodeview on windows
+  *  4. Link with "-l dbghelp -fuse-ld=lld -Wl,--pdb="
+  * 
+  *  Note: I have only tested this with the clang compiler
+  *
+* -------------------------------------------------------------------------- */
+
+#include <stdio.h>
+void init_trace(char* argv0);
+
+void print_trace(void);
+int fprint_trace(FILE* fp);
+int sprint_trace(char* buffer);
+
+#ifdef DR42_TRACE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,4 +193,5 @@ int sprint_trace(char* buffer){
   buffer[strlen(buffer) - 1] = '\0';
   return strlen(buffer);
 }
+#endif
 #endif
