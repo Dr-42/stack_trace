@@ -5,9 +5,13 @@
 #include <execinfo.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/wait.h>
 
 #define MAX_STACK_FRAMES 64
 void* buffer[MAX_STACK_FRAMES];
+
+#define READ 0
+#define WRITE 1
 
 void print_trace(char* prg_name) {
     int size = backtrace(buffer, MAX_STACK_FRAMES);
@@ -21,17 +25,17 @@ void print_trace(char* prg_name) {
         if (cpid == 0) {
             // Child
             close(pipefd[0]);
-            dup2(pipefd[1], STDOUT_FILENO);
-            dup2(pipefd[1], STDERR_FILENO);
+            dup2(pipefd[WRITE], STDOUT_FILENO);
+            dup2(pipefd[WRITE], STDERR_FILENO);
             char addr2line_cmd[512];
             sprintf(addr2line_cmd, "addr2line -p -f -e %s %p", prg_name, buffer[i] - 1);
             system(addr2line_cmd);
             exit(EXIT_SUCCESS);
         } else {
             // Parent
-            close(pipefd[1]);
+            close(pipefd[WRITE]);
             char line[512];
-            ssize_t bytes = read(pipefd[0], line, 512);
+            ssize_t bytes = read(pipefd[READ], line, 512);
             line[bytes] = '\0';
             // Remove pwd from path
             char* pwd = getenv("PWD");
@@ -51,7 +55,7 @@ void print_trace(char* prg_name) {
                 // Print rest of line
                 printf("%s", line_pos);
             }
-            close(pipefd[0]);
+            close(pipefd[READ]);
             // Stop at main
             if (strstr(line, "main at") != NULL) {
                 break;
@@ -60,3 +64,4 @@ void print_trace(char* prg_name) {
 
     }
 }
+
