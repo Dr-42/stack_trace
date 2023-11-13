@@ -93,7 +93,12 @@ int _fprint_trace(FILE* fp, size_t offset){
   if (len < 0) {
     return -1;
   }
+  #ifdef __linux__
   fprintf(fp, "%s\n", buffer);
+  #endif
+  #ifdef _WIN64
+  fprintf(fp, "%s", buffer);
+  #endif
   return len;
 }
 
