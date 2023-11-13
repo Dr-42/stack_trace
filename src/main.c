@@ -3,10 +3,11 @@
 #include "trace.h"
 
 char* prg_name = NULL;
+char buff[1024];
 
 int foo(int val) {
     int c = 1 + 2;
-    print_trace(prg_name);
+    dump_trace(prg_name);
     return val + c;
 }
 
