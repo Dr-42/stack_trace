@@ -6,6 +6,6 @@ name = "main"
 src = "./src/"
 include_dir = "./src/include/"
 type = "exe"
-cflags = "-g -Wall -Wextra"
-libs = ""
+cflags = "-g -gcodeview -Wall -Wextra"
+libs = "-l dbghelp -fuse-ld=lld -g -Wl,--pdb="
 deps = [""]

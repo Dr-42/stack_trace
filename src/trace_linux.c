@@ -1,3 +1,4 @@
+#ifdef __linux__
 #define _GNU_SOURCE
 #include <signal.h>
 #include <stdio.h>
@@ -48,4 +49,4 @@ void print_trace(char* prg_name) {
         }
     }
 }
-
+#endif
