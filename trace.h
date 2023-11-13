@@ -32,9 +32,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
   *  1. Make sure you have addr2line installed on linux
   *  --------------------------------------------------------------------------
   *  Usage:
-  *  0. #define DR42_TRACE before including this file
+  *  0. #define DR42_TRACE_IMPLEMENTATION before including this file
   *     STB style include
-  *     #define DR42_TRACE
+  *     #define DR42_TRACE_IMPLEMENTATION
   *     #include "trace.h"
   *
   *  1. Call init_trace(argv[0]) in main // Will work without this on windows
@@ -55,11 +55,23 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 void init_trace(char* argv0);
 
-void print_trace(void);
-int fprint_trace(FILE* fp);
-int sprint_trace(char* buffer);
+#ifdef _WIN64
+#define print_trace() _print_trace(2);
+#define fprint_trace(fp) _fprint_trace(fp, 1);
+#define sprint_trace(buffer) _sprint_trace(buffer, 0);
+#endif
+#ifdef __linux__
+#define print_trace() _print_trace(3);
+#define fprint_trace(fp) _fprint_trace(fp, 2);
+#define sprint_trace(buffer) _sprint_trace(buffer, 1);
+#endif
 
-#ifdef DR42_TRACE
+// Private functions
+void _print_trace(size_t offset);
+int _fprint_trace(FILE* fp, size_t offset);
+int _sprint_trace(char* buffer, size_t offset);
+
+#ifdef DR42_TRACE_IMPLEMENTATION
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,13 +83,13 @@ void init_trace(char* argv0){
   prg_name = argv0;
 }
 
-void print_trace(){
-  fprint_trace(stdout);
+void _print_trace(size_t offset){
+  _fprint_trace(stdout, offset);
 }
 
-int fprint_trace(FILE* fp){
+int _fprint_trace(FILE* fp, size_t offset){
   char buffer[1024];
-  int len = sprint_trace(buffer);
+  int len = _sprint_trace(buffer, offset);
   if (len < 0) {
     return -1;
   }
@@ -94,7 +106,7 @@ int fprint_trace(FILE* fp){
 #define MAX_STACK_FRAMES 64
 void* buffer[MAX_STACK_FRAMES];
 
-int sprint_trace(char* buff){
+int _sprint_trace(char* buff, size_t offset){
   if (prg_name == NULL) {
     fprintf(stderr, "Error: prg_name not set\n");
     fprintf(stderr, "Call init_trace(argv[0]) in main\n");
@@ -102,9 +114,8 @@ int sprint_trace(char* buff){
   }
   buff[0] = '\0';
   int size = backtrace(buffer, MAX_STACK_FRAMES);
-  printf("Stack trace:\n");
   char tmp[1024];
-  for (int i = 1; i < size; i++) {
+  for (int i = offset; i < size; i++) {
     // Execute addr2line and get prettified names
     char addr2line_cmd[512];
     sprintf(addr2line_cmd, "addr2line -p -f -e %s %p", prg_name, buffer[i] - 1);
@@ -147,8 +158,7 @@ int sprint_trace(char* buff){
 #include <windows.h>
 #include <dbghelp.h>
 
-int sprint_trace(char* buffer){
-  unsigned int 	i;
+int _sprint_trace(char* buffer, size_t offset){
   void         * stack[ 100 ];
   unsigned short frames;
   SYMBOL_INFO  * symbol;
@@ -166,7 +176,7 @@ int sprint_trace(char* buffer){
   IMAGEHLP_LINE64 line;
   line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 
-  for( i = 0; i < frames; i++ ){
+  for(size_t i = offset; i < frames; i++ ){
     SymFromAddr( process, ( DWORD64 )( stack[ i ]  - 1), 0, symbol );
     // Get filename and line number from the address of the function call
     DWORD displacement;

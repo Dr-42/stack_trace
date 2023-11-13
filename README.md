@@ -5,10 +5,10 @@ Simple stack trace for C programs
 1. Make sure you have addr2line installed on linux
 --------------------------------------------------------------------------
 ## Usage:
-0. #define DR42_TRACE before including this file
+0. #define DR42_TRACE_IMPLEMENTATION before including this file
 STB style include
 ```c
-#define DR42_TRACE
+#define DR42_TRACE_IMPLEMENTATION
 #include "trace.h"
 ```
 1. Call init_trace(argv[0]) in main // Will work without this on windows

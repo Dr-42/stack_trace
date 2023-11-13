@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define DR42_TRACE
+#define DR42_TRACE_IMPLEMENTATION
 #include "trace.h"
 
 int foo(int val) {
