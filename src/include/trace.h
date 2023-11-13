@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
-void dump_trace(char* prg_name);
-int print_trace(FILE* fp, char* prg_name);
-int get_trace(char* prg_name, char* buffer, size_t buffer_size);
+void init_trace(char* argv0);
+
+void print_trace(void);
+int fprint_trace(FILE* fp);
+int sprint_trace(char* buffer);
