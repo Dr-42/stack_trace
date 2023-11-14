@@ -11,10 +11,9 @@ STB style include
 #define DR42_TRACE_IMPLEMENTATION
 #include "trace.h"
 ```
-1. Call init_trace(argv[0]) in main // Will work without this on windows
-2. Call print_trace() to print the stack trace
-3. Call fprint_trace(fp) to print the stack trace to a file
-4. Call sprint_trace(buffer) to print the stack trace to a buffer
+1. Call print_trace() to print the stack trace
+2. Call fprint_trace(fp) to print the stack trace to a file
+3. Call sprint_trace(buffer) to print the stack trace to a buffer
 --------------------------------------------------------------------------
 # Compilation stuff:
 1. Compile with -g

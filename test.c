@@ -17,11 +17,10 @@ int baz(int val) {
     return bar(val);
 }
 
-int main(int argc, char** argv) {
+int main() {
     if (argc < 1) {
         return EXIT_FAILURE;
     }
-    init_trace(argv[0]);
     baz(4);
     return 0;
 }
