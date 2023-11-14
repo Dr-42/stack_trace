@@ -164,6 +164,7 @@ int _sprint_trace(char* buff, size_t offset){
 #include <dbghelp.h>
 
 int _sprint_trace(char* buffer, size_t offset){
+  buffer[0] = '\0';
   void         * stack[ 100 ];
   unsigned short frames;
   SYMBOL_INFO  * symbol;
@@ -182,6 +183,7 @@ int _sprint_trace(char* buffer, size_t offset){
   line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 
   for(size_t i = offset; i < frames; i++ ){
+    char tmp[1024];
     SymFromAddr( process, ( DWORD64 )( stack[ i ]  - 1), 0, symbol );
     // Get filename and line number from the address of the function call
     DWORD displacement;
@@ -194,16 +196,18 @@ int _sprint_trace(char* buffer, size_t offset){
 	strcpy(filename, cwd_ptr + strlen(filename) + 1);
       }
       // Print the stack trace
-      printf( "%s at %s:%lu\n", symbol->Name, filename, line.LineNumber );
+      snprintf(tmp, 1024, "%s at %s:%lu\n", symbol->Name, filename, line.LineNumber );
     } else {
       // Unable to get source file information
-      sprintf(buffer, "%s at (unknown)\n", symbol->Name);
+      snprintf(tmp, 1024, "%s at (unknown)\n", symbol->Name);
     }
+    strcat(buffer, tmp);
     if (strcmp(symbol->Name, "main") == 0) {
       // Stop printing the stack trace after reaching main
       break;
     }
   }
+  strcat(buffer, "\n");
   free( symbol );
   buffer[strlen(buffer) - 1] = '\0';
   return strlen(buffer);
