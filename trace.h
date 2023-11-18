@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DR42_TRACE_H
+#define DR42_TRACE_H
 
 /* --------------------------------------------------------------------------
 Copyright 2023 Dr. Spandan Roy
@@ -68,6 +69,8 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 void _print_trace(size_t offset);
 int _fprint_trace(FILE* fp, size_t offset);
 int _sprint_trace(char* buffer, size_t offset);
+
+#endif
 
 #ifdef DR42_TRACE_IMPLEMENTATION
 
